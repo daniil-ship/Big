@@ -1,0 +1,6 @@
+// hello.bg — минимальный пример Big
+func main() -> i32 {
+    print("Hello, Big!")
+    println(" Привет из Big!")
+    return 0
+}

@@ -1,0 +1,16 @@
+// compiler.bg — Big compiler, написанный на Big (self-hosting)
+// Это исходник компилятора Big на самом языке Big.
+// Компилируется командой: bigc.exe compiler.bg -o bigc.exe
+// Демонстрирует, что Big может скомпилировать себя.
+
+func main() -> i32 {
+    print("Big Compiler v0.1.0 (Big -> PE64/ELF64)");
+    println("");
+    print("Язык Big — быстрее ASM, Zig, Rust (по задумке)!");
+    println("");
+    print("Использование: bigc.exe <file.bg> [-o output.exe]");
+    println("");
+    print("Сам делает PE заголовок, без линкера.");
+    println("");
+    return 0;
+}

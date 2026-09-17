@@ -1,0 +1,47 @@
+// Big — пример главной программы
+// Компиляция: bigc.exe main.bg -> main.exe (Windows PE) или bigc main.bg --target linux -> main (ELF)
+
+func main() -> i32 {
+    // переменные (с ; как в Rust/Zig)
+    let x: i32 = 42;
+    let y: i32 = 8;
+    let sum: i32 = x + y * 2;
+
+    // строки:UTF-8 поддерживается
+    print("Привет, Big! ");
+    println("— мир Big");
+    print("x = ");
+    print(x);
+    println("");
+
+    print("sum = ");
+    print(sum);
+    println("");
+
+    // ветвление
+    if x > 10 {
+        print("x большое (>10) ");
+        println("— круто!");
+    } else {
+        print("x маленькое");
+    }
+
+    // цикл for 0..5  (в bootstrap печать i как <int> — в v0.2 будет число)
+    print("Счёт: ");
+    for i in 0..5 {
+        print(i);
+        print(" ");
+    }
+    println("");
+
+    // цикл while
+    let n: i32 = 3;
+    while n > 0 {
+        print("while n=");
+        print(n);
+        println("");
+        n = n - 1;
+    }
+
+    return 0;
+}

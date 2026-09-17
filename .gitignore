@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+*.egg-info/
+dist/
+build/__pycache__/
+*.log
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# Big compiler temporaries
+/tmp/
+*.o
+*.obj
+*.asm.gen
+
+# Keep binaries (bigc.exe, examples/*.exe, build/compiler) — do NOT ignore them
+!bigc.exe
+!examples/*.exe
+!examples/hello
+!examples/main
+!examples/vars
+!examples/fib
+!build/compiler
+
+# But ignore other temp outputs
+*.tmp
