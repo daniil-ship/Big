@@ -682,8 +682,7 @@ opt_fold:
 cg_emit_text:
     push rbx
     ; prologue: push rbp; mov rbp,rsp; sub rsp, locals
-    mov byte [rdi], 0x55
-    mov word [rdi+1], 0xE58948 ; 48 89 E5
+    mov dword [rdi], 0xE5894855  ; 55 48 89 E5
     ; ... эмиссия ...
     pop rbx
     ret
