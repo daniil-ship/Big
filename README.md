@@ -23,7 +23,7 @@
 | **Сам делает PE** | `src/bigc.asm:pe_build` (чистый ASM) вручную пишет DOS `MZ`, `e_lfanew=0x80`, PE sig, COFF (Machine `0x8664`), Optional `0x20B`, `.text` RVA `0x1000` / `.rdata` RVA `0x2000`, FileAlign `0x200`, импорт `kernel32.dll` (GetStdHandle/WriteFile/ExitProcess/SetConsoleOutputCP/CreateFileA/ReadFile) — без `link.exe`, без Python |
 | **Кросс-сборка** | один `bigc.exe` (ASM) собирает и `windows` (PE) и `linux` (ELF) — флаг `--target`. PE собирается на Linux через тот же `src/bigc.asm` (FASM) |
 | **На asm — ПОЛНОСТЬЮ** | `src/bigc.asm` — **100% FASM** (`format PE64 console 5.0`, `include 'win64a.inc'`), 600+ строк, никакого `bigc.py` в рантайме. `fasm src/bigc.asm bigc.exe` — и готово. `SetConsoleOutputCP(65001)` чинит `╨п╨╖╤Л╨║` → `Привет` |
-| **Быстрее ASM/Zig/Rust** | чистый ASM, прямой эмит байтов `48 B8 …`, без LLVM, без бэкенда, constant folding, peephole; `hello.exe` — **1536 байт**, `hello` ELF — **298 байт**, `bigc.exe` (сам компилятор) — **7.5KB** |
+| **Быстрее ASM/Zig/Rust** | чистый ASM, прямой эмит байтов `48 B8 …`, без LLVM, без бэкенда, constant folding, peephole; `hello.exe` — **1536 байт**, `hello` ELF — **298 байт**, `bigc.exe` (сам компилятор) — **5.6KB** |
 | **Диагностика как в Rust** | `error[E3006]: …` + `--> file:line:col` + `|` + `помощь: …` + цвета. Есть `error`/`warning`/`info` с кодами `E/W/I` и подсказками `= help:` / `= note:` |
 | **Самокомпиляция** | `src/compiler.bg` написан на Big, компилируется `bigc.exe compiler.bg -o bigc.exe` (и `bigc compiler.bg --target linux`). Выводит баннер, парсит аргументы, демонстрирует пайплайн |
 
@@ -44,7 +44,7 @@ git clone https://github.com/daniil-ship/Big
 cd Big
 
 # 1. Собираем компилятор ИЗ ЧИСТОГО ASM (без Python!)
-fasm src/bigc.asm bigc.exe          # Windows PE64, 7.5KB
+fasm src/bigc.asm bigc.exe          # Windows PE64, 5.6KB
 # на Linux: fasm src/bigc.asm bigc  # ELF64, см. src/bigc_linux.asm
 
 # Проверяем что это PE, а не Python-обёртка
@@ -226,7 +226,7 @@ EHDR Entry 0x400000, PHDR PT_LOAD R+X (filesz=memsz, align 0x1000)
 | `vars.bg` | 564 Б | 2048 Б | `c = 65` |
 | `main.bg` | 1452 Б | 3584 Б | `sum = 58`, ветвления, циклы |
 | `fib.bg` | 347 Б | 1536 Б | `fib(10) = <int>` (заглушка) |
-| `src/bigc.asm` → `bigc.exe` | 4.2KB (ELF) | **7.5KB (PE, pure ASM)** | `bigc.exe main.bg --target windows -o temp.exe` → `temp.exe` |
+| `src/bigc.asm` → `bigc.exe` | 4.2KB (ELF) | **5.6KB (PE, pure ASM)** | `bigc.exe main.bg --target windows -o temp.exe` → `temp.exe` |
 
 Проверка PE/ELF без гаданий:
 
@@ -289,8 +289,8 @@ info[I3001]: функция `main` — точка входа программы
 ```
 Big/
 ├── src/bigc.asm       # ← ГЛАВНЫЙ, 100% FASM, 600+ строк, pure ASM (никакого Python в рантайме)
-│                      #    fasm src/bigc.asm bigc.exe -> 7.5KB PE64, SetConsoleOutputCP fix
-├── bigc.exe           # PE64 7.5KB, собран ИСКЛЮЧИТЕЛЬНО из src/bigc.asm (проверь: fasm src/bigc.asm bigc.exe)
+│                      #    fasm src/bigc.asm bigc.exe -> 5.6KB PE64, SetConsoleOutputCP fix
+├── bigc.exe           # PE64 5.6KB, собран ИСКЛЮЧИТЕЛЬНО из src/bigc.asm (проверь: fasm src/bigc.asm bigc.exe)
 ├── src/bigc_linux.asm # ELF64 версия для Linux (syscalls)
 ├── build/compiler     # ELF 4.2KB, тот же чистый ASM для Linux
 ├── bigc.py            # bootstrap на Python (для истории, не нужен: bigc.exe самодостаточен)
@@ -318,7 +318,7 @@ Big/
 **Больше никакого `bigc.py` в рантайме.** `bigc.exe` собирается ИСКЛЮЧИТЕЛЬНО из `src/bigc.asm`:
 
 ```bash
-fasm src/bigc.asm bigc.exe          # 7.5KB PE64, Windows
+fasm src/bigc.asm bigc.exe          # 5.6KB PE64, Windows
 fasm src/bigc_linux.asm bigc        # 4.2KB ELF64, Linux (опционально)
 ```
 
@@ -342,7 +342,7 @@ fasm src/bigc.asm bigc.exe && bigc.exe --help
 
 Заявка «быстрее ASM/Zig/Rust» — теперь не мем, а факт: **чистый ASM без LLVM/линкера**.
 
-- `bigc.exe` (pure ASM, 7.5KB) компилирует `hello.bg` за **< 5 мс** — весь пайплайн LEX→PE + запись, без Python старта.
+- `bigc.exe` (pure ASM, 5.6KB) компилирует `hello.bg` за **< 5 мс** — весь пайплайн LEX→PE + запись, без Python старта.
 - Бинарь `hello.exe` — **1536 байт** (PE) / **298 байт** (ELF) — стартует быстрее любого `hello` на Rust (который тянет рантайм).
 - `src/bigc.asm` → `fasm src/bigc.asm bigc.exe` — **чистый `asm`, без `python`, старт < 1 мс**, `SetConsoleOutputCP` уже внутри.
 - ELF версия — без libc, только `write`/`exit` syscalls, один `PT_LOAD`.
