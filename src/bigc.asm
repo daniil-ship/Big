@@ -84,22 +84,8 @@ start:
     jmp .scan_version
 
 .check_bg:
-    mov rdi, rsi
-    xor rcx, rcx
-.scan_bg:
-    mov al, [rdi+rcx]
-    test al, al
-    je has_bg              ; всегда создаём temp.exe, даже если .bg не найден (fix silent fail)
-    cmp byte [rdi+rcx], '.'
-    jne .next_bg
-    cmp byte [rdi+rcx+1], 'b'
-    jne .next_bg
-    cmp byte [rdi+rcx+2], 'g'
-    jne .next_bg
+    ; упрощено: всегда создаём temp.exe если не --help/--version
     jmp has_bg
-.next_bg:
-    inc rcx
-    jmp .scan_bg
 
 ; ---- --help ----
 has_help:
