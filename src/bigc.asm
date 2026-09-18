@@ -158,7 +158,7 @@ ORG 0
     dd RDATA_FILE
     dd 0, 0
     dw 0, 0
-    dd 0xC0000040                   ; initialized data, read, write
+    dd 0x40000040                   ; initialized data, read (loader patches the IAT)
 
     times HEADERS_SIZE - ($ - $$) db 0
 
@@ -241,7 +241,7 @@ start:
 ; --help
 has_help:
     sub rsp, 40
-    mov ecx, -11
+    mov rcx, -11
     call_import IAT_GETSTD
     mov rcx, rax
     mov rdx, MSG_HELP_ADDR
@@ -256,7 +256,7 @@ has_help:
 ; --version
 has_version:
     sub rsp, 40
-    mov ecx, -11
+    mov rcx, -11
     call_import IAT_GETSTD
     mov rcx, rax
     mov rdx, MSG_VERSION_ADDR
@@ -323,7 +323,7 @@ has_bg:
     call_import IAT_CLOSE
 
     sub rsp, 40
-    mov ecx, -11
+    mov rcx, -11
     call_import IAT_GETSTD
     mov rcx, rax
     mov rdx, MSG_INFO_ADDR
@@ -337,7 +337,7 @@ has_bg:
 
 no_input:
     sub rsp, 40
-    mov ecx, -11
+    mov rcx, -11
     call_import IAT_GETSTD
     mov rcx, rax
     mov rdx, MSG_HELP_ADDR
