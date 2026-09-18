@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b0d12" />
+  <title>Google — но в 100000 раз лучше</title>
+  <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%234285F4"/><stop offset=".34" stop-color="%23EA4335"/><stop offset=".66" stop-color="%23FBBC05"/><stop offset="1" stop-color="%2334A853"/></linearGradient></defs><circle cx="32" cy="32" r="30" fill="url(%23g)"/><text x="32" y="44" font-family="Arial, sans-serif" font-size="36" font-weight="700" text-anchor="middle" fill="white">G</text></svg>' />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ═══════════ ЖИВОЙ ФОН ═══════════ -->
+  <div class="bg" aria-hidden="true">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+    <div class="blob b4"></div>
+    <div class="blob b5"></div>
+    <div class="blob b6"></div>
+    <div class="blob mouse-blob" id="mouseBlob"></div>
+    <div class="aurora"></div>
+  </div>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+
+  <!-- ═══════════ ВЕРХНЯЯ ПАНЕЛЬ ═══════════ -->
+  <header class="nav">
+    <nav class="nav-side nav-left" aria-label="Основная навигация">
+      <a class="nav-link" href="https://about.google" target="_blank" rel="noopener" data-i18n="navAbout">О Google</a>
+      <a class="nav-link" href="https://store.google.com" target="_blank" rel="noopener" data-i18n="navStore">Магазин</a>
+    </nav>
+
+    <nav class="nav-side nav-right" aria-label="Сервисы">
+      <a class="nav-link hide-sm" href="https://mail.google.com" target="_blank" rel="noopener" data-i18n="navMail">Почта</a>
+      <a class="nav-link hide-sm" href="https://www.google.com/imghp" target="_blank" rel="noopener" data-i18n="navImages">Картинки</a>
+
+      <button class="icon-btn glass" id="langBtn" title="Сменить язык / Switch language" aria-label="Switch language">
+        <span class="lang-label" id="langLabel">RU</span>
+      </button>
+
+      <button class="icon-btn glass" id="themeBtn" title="Тема" aria-label="Переключить тему">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <circle cx="12" cy="12" r="4.2"/>
+          <path d="M12 2.5v2.2M12 19.3v2.2M4.3 4.3l1.6 1.6M18.1 18.1l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.3 19.7l1.6-1.6M18.1 5.9l1.6-1.6"/>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.4 14.2A8.5 8.5 0 1 1 9.8 3.6a7 7 0 0 0 10.6 10.6z"/>
+        </svg>
+      </button>
+
+      <button class="icon-btn glass" id="appsBtn" title="Приложения Google" aria-label="Приложения Google">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="5" cy="5" r="1.7"/><circle cx="12" cy="5" r="1.7"/><circle cx="19" cy="5" r="1.7"/>
+          <circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/>
+          <circle cx="5" cy="19" r="1.7"/><circle cx="12" cy="19" r="1.7"/><circle cx="19" cy="19" r="1.7"/>
+        </svg>
+      </button>
+
+      <a class="avatar glass" href="https://myaccount.google.com" target="_blank" rel="noopener" title="Аккаунт Google" aria-label="Аккаунт Google">G</a>
+    </nav>
+  </header>
+
+  <!-- ═══════════ ГЕРОЙ ═══════════ -->
+  <main class="hero">
+
+    <div class="logo-wrap">
+      <h1 class="logo" aria-label="Google">
+        <span class="ch" style="--c:#4285F4; --d:0ms">G</span><span class="ch" style="--c:#EA4335; --d:60ms">o</span><span class="ch" style="--c:#FBBC05; --d:120ms">o</span><span class="ch" style="--c:#4285F4; --d:180ms">g</span><span class="ch" style="--c:#34A853; --d:240ms">l</span><span class="ch" style="--c:#EA4335; --d:300ms">e</span>
+      </h1>
+      <button class="badge glass glare" id="badge" title="Попробуй нажми ✨">
+        <span class="badge-dot"></span>
+        <span data-i18n="badge">ремейк · лучше в ×100 000</span>
+      </button>
+    </div>
+
+    <!-- Поиск -->
+    <form class="searchbar glass glare" id="searchForm" role="search" autocomplete="off">
+      <svg class="sb-icon sb-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+        <circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/>
+      </svg>
+
+      <input class="sb-input" id="q" type="text" name="q" autocomplete="off" spellcheck="false"
+             enterkeyhint="search" autofocus
+             data-i18n-ph="phSearch" placeholder="Ищите в Google — как в 2026" aria-label="Поиск" />
+
+      <button type="button" class="sb-icon-btn" id="micBtn" title="Голосовой поиск" aria-label="Голосовой поиск">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="2.5" width="6" height="11.5" rx="3"/>
+          <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3.5"/>
+        </svg>
+      </button>
+
+      <button type="button" class="sb-icon-btn" id="lensBtn" title="Поиск по картинке" aria-label="Поиск по картинке">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 8.2V5.5A2.5 2.5 0 0 1 5.5 3h2.7M15.8 3h2.7A2.5 2.5 0 0 1 21 5.5v2.7M21 15.8v2.7a2.5 2.5 0 0 1-2.5 2.5h-2.7M8.2 21H5.5A2.5 2.5 0 0 1 3 18.5v-2.7"/>
+          <circle cx="12" cy="12" r="3.4"/>
+        </svg>
+      </button>
+
+      <div class="suggest glass" id="suggest" role="listbox" aria-label="Подсказки"></div>
+    </form>
+
+    <div class="actions">
+      <button class="btn glass glare" id="btnSearch" type="button" data-i18n="btnSearch">Искать в Google</button>
+      <button class="btn glass glare" id="btnLucky" type="button" data-i18n="btnLucky">Мне повезёт!</button>
+    </div>
+
+    <!-- Тренды -->
+    <div class="trending">
+      <span class="trending-label glass"><span class="fire">🔥</span><span data-i18n="trending">Сейчас ищут</span></span>
+      <div class="chips" id="chips"></div>
+    </div>
+
+    <!-- Приложения -->
+    <section class="apps" id="apps" aria-label="Приложения Google">
+      <a class="tile glass glare" href="https://mail.google.com" target="_blank" rel="noopener" style="--brand:#EA4335">
+        <span class="tile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2.5" y="4.5" width="19" height="15" rx="3"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/>
+          </svg>
+        </span>
+        <span class="tile-label" data-i18n="appMail">Почта</span>
+      </a>
+
+      <a class="tile glass glare" href="https://www.youtube.com" target="_blank" rel="noopener" style="--brand:#FF0000">
+        <span class="tile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="5.5" width="20" height="13" rx="4"/><path d="m10 9.5 5 3-5 3z" fill="currentColor" stroke="none"/>
+          </svg>
+        </span>
+        <span class="tile-label">YouTube</span>
+      </a>
+
+      <a class="tile glass glare" href="https://maps.google.com" target="_blank" rel="noopener" style="--brand:#34A853">
+        <span class="tile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 21.5s7.5-6.1 7.5-11.5a7.5 7.5 0 1 0-15 0C4.5 15.4 12 21.5 12 21.5z"/><circle cx="12" cy="10" r="2.8"/>
+          </svg>
+        </span>
+        <span class="tile-label" data-i18n="appMaps">Карты</span>
+      </a>
+
+      <a class="tile glass glare" href="https://drive.google.com" target="_blank" rel="noopener" style="--brand:#FBBC05">
+        <span class="tile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8.5 3.5h7l6 10.5-3.5 6h-12l-3.5-6z"/><path d="M8.5 3.5 5 20M15.5 3.5 19 20M2.5 14h19"/>
+          </svg>
+        </span>
+        <span class="tile-label" data-i18n="appDrive">Диск</span>
+      </a>
+
+      <a class="tile glass glare" href="https://photos.google.com" target="_blank" rel="noopener" style="--brand:#4285F4">
+        <span class="tile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="3.5"/><circle cx="9" cy="9" r="2"/><path d="M21 15.5 16 10.5 5.5 21"/>
+          </svg>
+        </span>
+        <span class="tile-label" data-i18n="appPhotos">Фото</span>
+      </a>
+
+      <a class="tile glass glare" href="https://translate.google.com" target="_blank" rel="noopener" style="--brand:#7C4DFF">
+        <span class="tile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 5.5h9M7.5 3v2.5M5 5.5c.8 3.4 3.4 6.8 6.6 8.6M10 5.5c-.9 3.8-3.9 7.4-7.3 9.1"/>
+            <path d="m12.5 21 4.5-10 4.5 10M14 17.5h6"/>
+          </svg>
+        </span>
+        <span class="tile-label" data-i18n="appTranslate">Переводчик</span>
+      </a>
+
+      <a class="tile glass glare" href="https://calendar.google.com" target="_blank" rel="noopener" style="--brand:#00C2FF">
+        <span class="tile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4.5" width="18" height="17" rx="3.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><path d="m10.8 16.5 2 2 3.6-3.6"/>
+          </svg>
+        </span>
+        <span class="tile-label" data-i18n="appCalendar">Календарь</span>
+      </a>
+    </section>
+
+    <p class="hint"><kbd>/</kbd> <span data-i18n="hint">— быстрый фокус ·</span> <kbd>Enter</kbd> <span data-i18n="hint2">— поиск</span></p>
+  </main>
+
+  <!-- ═══════════ ПОДВАЛ ═══════════ -->
+  <footer class="footer">
+    <div class="footer-row">
+      <div class="foot-links">
+        <a href="https://ads.google.com" target="_blank" rel="noopener" data-i18n="footAds">Реклама</a>
+        <a href="https://www.google.com/services" target="_blank" rel="noopener" data-i18n="footBusiness">Для бизнеса</a>
+        <a href="https://www.google.com/search/howsearchworks" target="_blank" rel="noopener" data-i18n="footHow">Как работает Поиск</a>
+      </div>
+      <div class="foot-mid"><span class="drop">💧</span> <span data-i18n="footMade">сделано из жидкого стекла</span></div>
+      <div class="foot-links">
+        <a href="https://policies.google.com/privacy" target="_blank" rel="noopener" data-i18n="footPrivacy">Конфиденциальность</a>
+        <a href="https://policies.google.com/terms" target="_blank" rel="noopener" data-i18n="footTerms">Условия</a>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast glass" id="toast" role="status"></div>
+  <canvas id="confetti"></canvas>
+
+  <script src="app.js"></script>
+</body>
+</html>
