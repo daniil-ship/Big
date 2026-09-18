@@ -208,7 +208,7 @@ exit:  rax=60, rdi=code, syscall
 ## 7. Bootstrap и asm
 
 - `bigc.py` — эталон, полный пайплайн, тестируется ежедневно.
-- `src/bigc.asm` — ручной перевод того же пайплайна на asm, с теми же константами (`IMAGE_BASE`, `SECTION_ALIGN`), теми же эмит-байтами (`48 B8`, `E8`, `E9`, `0F 84` …). Собирается `fasm src/bigc.asm bigc.exe`.
+- `src/bigc.asm` — ручной перевод того же пайплайна на asm, с теми же константами (`IMAGE_BASE`, `SECTION_ALIGN`), теми же эмит-байтами (`48 B8`, `E8`, `E9`, `0F 84` …). Собирается `nasm -f bin src/bigc.asm -o bigc.exe`.
 - `src/compiler.bg` — минимальный self-host: `func main() -> i32 { print("Big Compiler …"); return 0; }` — доказывает, что Big может скомпилировать себя; расширяется по мере роста рантайма.
 
 ## 8. Производительность

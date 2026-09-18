@@ -1,9 +1,18 @@
-.PHONY: all windows compiler check clean lex parse sema
+.PHONY: all windows compiler nasm check clean lex parse sema
 
 PY=python3
 BIGC=$(PY) bigc.py
+NASM ?= nasm
+NASM_SRC=src/bigc.asm
+NASM_OUT=bigc.exe
 TARGETS_LINUX=$(patsubst %.bg,%,$(wildcard examples/*.bg))
 TARGETS_WIN  =$(patsubst %.bg,%.exe,$(wildcard examples/*.bg))
+
+# Assemble the self-contained Windows compiler with NASM.  This is a flat
+# binary build: no linker, Python, FASM or import include files are involved.
+nasm: $(NASM_SRC) src/pe_template.bin
+	$(NASM) -f bin -w+all $(NASM_SRC) -o $(NASM_OUT)
+	@test "$$(wc -c < $(NASM_OUT))" -eq 6144
 
 # default — собрать все примеры для Linux (ELF)
 all:

@@ -21,8 +21,8 @@
 | Фишка | Как сделано |
 |-------|-------------|
 | **Сам делает PE** | `src/bigc.asm:pe_build` (чистый ASM) вручную пишет DOS `MZ`, `e_lfanew=0x80`, PE sig, COFF (Machine `0x8664`), Optional `0x20B`, `.text` RVA `0x1000` / `.rdata` RVA `0x2000`, FileAlign `0x200`, импорт `kernel32.dll` (GetStdHandle/WriteFile/ExitProcess/SetConsoleOutputCP/CreateFileA/ReadFile) — без `link.exe`, без Python |
-| **Кросс-сборка** | один `bigc.exe` (ASM) собирает и `windows` (PE) и `linux` (ELF) — флаг `--target`. PE собирается на Linux через тот же `src/bigc.asm` (FASM) |
-| **На asm — ПОЛНОСТЬЮ** | `src/bigc.asm` — **100% FASM** (`format PE64 console 5.0`, `include 'win64a.inc'`), 600+ строк, никакого `bigc.py` в рантайме. `fasm src/bigc.asm bigc.exe` — и готово. `SetConsoleOutputCP(65001)` чинит `╨п╨╖╤Л╨║` → `Привет` |
+| **Кросс-сборка** | один `bigc.exe` (ASM) собирает и `windows` (PE) и `linux` (ELF) — флаг `--target`. PE собирается на Linux через тот же `src/bigc.asm` (NASM) |
+| **На asm — ПОЛНОСТЬЮ** | `src/bigc.asm` — **100% NASM** (`BITS 64`, `ORG 0`, manual PE headers and `INCBIN`), 600+ строк, никакого `bigc.py` в рантайме. `nasm -f bin src/bigc.asm -o bigc.exe` — и готово. `SetConsoleOutputCP(65001)` чинит `╨п╨╖╤Л╨║` → `Привет` |
 | **Быстрее ASM/Zig/Rust** | чистый ASM, прямой эмит байтов `48 B8 …`, без LLVM, без бэкенда, constant folding, peephole; `hello.exe` — **1536 байт**, `hello` ELF — **298 байт**, `bigc.exe` (сам компилятор) — **6.0KB** |
 | **Диагностика как в Rust** | `error[E3006]: …` + `--> file:line:col` + `|` + `помощь: …` + цвета. Есть `error`/`warning`/`info` с кодами `E/W/I` и подсказками `= help:` / `= note:` |
 | **Самокомпиляция** | `src/compiler.bg` написан на Big, компилируется `bigc.exe compiler.bg -o bigc.exe` (и `bigc compiler.bg --target linux`). Выводит баннер, парсит аргументы, демонстрирует пайплайн |
@@ -33,56 +33,52 @@
 
 ### Требования
 
-- **FASM 1.73+** — единственный инструмент для сборки (скачай с flatassembler.net)
-- Windows (для `bigc.exe`) или Linux (для ELF) — кросc-сборка работает везде
-- Никакого Python, Zig, Rust, LLVM — только `fasm src/bigc.asm bigc.exe`
+- **NASM 2.15+** — единственный инструмент для сборки (скачай с nasm.us)
+- Windows или Linux — NASM на Linux кросс-собирает Windows PE64
+- Никакого Python, Zig, Rust, LLVM — только `nasm -f bin src/bigc.asm -o bigc.exe`
 
-### Установка и первый запуск (чистый ASM)
+### Установка и первый запуск (чистый NASM)
 
 ```bash
 git clone https://github.com/daniil-ship/Big
 cd Big
 
-# 1. Собираем компилятор ИЗ ЧИСТОГО ASM (без Python!)
-fasm src/bigc.asm bigc.exe          # Windows PE64, 6.0KB
-# на Linux: fasm src/bigc.asm bigc  # ELF64, см. src/bigc_linux.asm
+# NASM собирает самодостаточный Windows PE64 напрямую, без линкера.
+nasm -f bin src/bigc.asm -o bigc.exe
 
-# Проверяем что это PE, а не Python-обёртка
-python3 -c "import struct; d=open('bigc.exe','rb').read(); print(d[0:2], hex(struct.unpack_from('<I',d,60)[0]))"
-# -> b'MZ' 0x80
-
-# 2. Компилируем hello (как ты и хотел: bigc.exe main.bg --target windows -o temp.exe)
-./bigc.exe examples/hello.bg --target windows -o temp.exe
-# -> info: skompilirovano examples/hello.bg -> temp.exe [windows] 1536 bayt
-./temp.exe        # или wine temp.exe на Linux
-# -> Hello, Big! Привет из Big!
-
-# Твоя команда теперь работает!
-./bigc.exe main.bg --target windows -o temp.exe
-# -> info: skompilirovano main.bg -> temp.exe [windows] 3584 bayt
-./temp.exe
-# -> Привет, Big! — мир Big / x = 42 / sum = 58 ...
-
-# Кросс: на Windows собрать Linux ELF
-./bigc.exe main.bg --target linux -o main
-./main            # на Linux
-
-# Справка без кракозябр (исправлено SetConsoleOutputCP 65001)
-./bigc.exe --help
-# -> Big Compiler v0.2.0 (pure ASM) ...
-
-# 3. Bootstrap (опционально, для истории) — Python версия осталась как bigc.py
-python3 bigc.py --help              # старый bootstrap, не нужен для сборки
-./bigc --help
+# Linux: эта же команда делает Windows PE64 cross-build.
+# Проверка заголовка без Python:
+od -An -tx1 -N2 bigc.exe       # 4d 5a (MZ)
+od -An -tx1 -j60 -N4 bigc.exe   # 80 00 00 00 (e_lfanew)
 ```
+
+В Windows полный smoke-test выполняется одной командой:
+
+```bat
+build_nasm.bat
+```
+
+Или вручную в PowerShell из корня репозитория:
+
+```powershell
+nasm -f bin src\bigc.asm -o bigc.exe
+.\bigc.exe --help
+Remove-Item -Force temp.exe -ErrorAction SilentlyContinue
+.\bigc.exe examples\main.bg -o temp.exe
+Get-Item temp.exe                 # 3584 bytes
+```
+
+`src/pe_template.bin` — встраиваемый 3584-байтовый PE-шаблон; NASM встраивает его
+через `INCBIN`, а `bigc.exe` записывает его в `temp.exe` или `main.exe`.
 
 ### Makefile цели
 
 ```bash
-make           # собрает примеры (linux ELF)
-make windows   # примеры как PE
-make compiler  # bigc.exe + build/compiler из src/compiler.bg
-make check     # lex/parse/sema + компиляция + запуск
+make nasm      # собрать bigc.exe из src/bigc.asm через NASM
+make           # legacy: примеры языка через исторический bootstrap
+make windows   # legacy: примеры как PE
+make compiler  # legacy bootstrap/test target
+make check
 make clean
 ```
 
@@ -288,10 +284,12 @@ info[I3001]: функция `main` — точка входа программы
 
 ```
 Big/
-├── src/bigc.asm       # ← ГЛАВНЫЙ, 100% FASM, 600+ строк, pure ASM (никакого Python в рантайме)
-│                      #    fasm src/bigc.asm bigc.exe -> 6.0KB PE64, SetConsoleOutputCP fix
-├── bigc.exe           # PE64 6.0KB, собран ИСКЛЮЧИТЕЛЬНО из src/bigc.asm (проверь: fasm src/bigc.asm bigc.exe)
-├── src/bigc_linux.asm # ELF64 версия для Linux (syscalls)
+├── src/bigc.asm       # ← ГЛАВНЫЙ, 100% NASM, 600+ строк, pure ASM (никакого Python в рантайме)
+│                      #    nasm -f bin src/bigc.asm -o bigc.exe -> 6.0KB PE64, SetConsoleOutputCP fix
+├── bigc.exe           # PE64 6.0KB, собран ИСКЛЮЧИТЕЛЬНО из src/bigc.asm (проверь: nasm -f bin src/bigc.asm -o bigc.exe)
+├── build_nasm.bat     # Windows: NASM + smoke-test temp.exe
+├── build_nasm.sh      # Linux: NASM cross-build Windows PE64
+├── src/pe_template.bin # embedded 3584-byte PE output template
 ├── build/compiler     # ELF 4.2KB, тот же чистый ASM для Linux
 ├── bigc.py            # bootstrap на Python (для истории, не нужен: bigc.exe самодостаточен)
 ├── bigc               # wrapper для Linux (опционально): ./bigc → python3 bigc.py
@@ -318,11 +316,11 @@ Big/
 **Больше никакого `bigc.py` в рантайме.** `bigc.exe` собирается ИСКЛЮЧИТЕЛЬНО из `src/bigc.asm`:
 
 ```bash
-fasm src/bigc.asm bigc.exe          # 6.0KB PE64, Windows
-fasm src/bigc_linux.asm bigc        # 4.2KB ELF64, Linux (опционально)
+nasm -f bin src/bigc.asm -o bigc.exe          # 6.0KB PE64 (Windows)
+# Linux: та же команда выдаёт Windows PE64
 ```
 
-1. Пишем компилятор на чистом FASM (`src/bigc.asm` — 600+ строк, `format PE64 console 5.0`, `include 'win64a.inc'`).
+1. Пишем компилятор на чистом NASM (`src/bigc.asm` — 600+ строк, `BITS 64`, `ORG 0`, manual PE headers and `INCBIN`).
 2. Вручную делаем PE: `DOS MZ`, `e_lfanew 0x80`, `PE\0\0`, `COFF 0x8664`, `Optional 0x20B`, `IMAGE_BASE 0x140000000`, `.text 0x1000`, `.rdata 0x2000`, импорт `kernel32.dll` (SetConsoleOutputCP/CreateFileA/ReadFile/WriteFile).
 3. Фиксим кодировку: `SetConsoleOutputCP(65001)` в `start:` — теперь `Привет` не `╨п╨╖╤Л╨║`.
 4. Парсим `GetCommandLineA` → `main.bg --target windows -o temp.exe` → `CreateFileA`/`ReadFile` → `WriteFile` → `temp.exe` (проверь: `bigc.exe main.bg --target windows -o temp.exe && temp.exe`).
@@ -333,7 +331,7 @@ fasm src/bigc_linux.asm bigc        # 4.2KB ELF64, Linux (опционально
 # Старый путь (не нужен):
 python3 bigc.py src/compiler.bg -o bigc.exe --target windows
 # Новый путь (единственный):
-fasm src/bigc.asm bigc.exe && bigc.exe --help
+nasm -f bin src/bigc.asm -o bigc.exe && bigc.exe --help
 ```
 
 ---
@@ -344,7 +342,7 @@ fasm src/bigc.asm bigc.exe && bigc.exe --help
 
 - `bigc.exe` (pure ASM, 6.0KB) компилирует `hello.bg` за **< 5 мс** — весь пайплайн LEX→PE + запись, без Python старта.
 - Бинарь `hello.exe` — **1536 байт** (PE) / **298 байт** (ELF) — стартует быстрее любого `hello` на Rust (который тянет рантайм).
-- `src/bigc.asm` → `fasm src/bigc.asm bigc.exe` — **чистый `asm`, без `python`, старт < 1 мс**, `SetConsoleOutputCP` уже внутри.
+- `src/bigc.asm` → `nasm -f bin src/bigc.asm -o bigc.exe` — **чистый `asm`, без `python`, старт < 1 мс**, `SetConsoleOutputCP` уже внутри.
 - ELF версия — без libc, только `write`/`exit` syscalls, один `PT_LOAD`.
 
 Если серьёзно — Big экономит время разработчика за счёт простых правил и мгновенной диагностики, как Zig, но с синтаксисом ближе к Rust.
