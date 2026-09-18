@@ -231,3 +231,4 @@ exit:  rax=60, rdi=code, syscall
 | Дебаг-инфо/DWARF | `ELFBuilder` |
 
 Каждый TODO помечен `W4002` или `TODO` в `CG` — не скрывается.
+

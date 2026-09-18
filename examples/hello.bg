@@ -4,3 +4,4 @@ func main() -> i32 {
     println(" Привет из Big!")
     return 0
 }
+

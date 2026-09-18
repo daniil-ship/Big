@@ -6,3 +6,4 @@ import runpy
 # This file is installed as ./bigc
 sys.argv[0]=str(Path(__file__).parent/"bigc.py")
 runpy.run_path(str(Path(__file__).parent/"bigc.py"), run_name="__main__")
+

@@ -263,3 +263,4 @@ _CloseHandle        db 0,0,'CloseHandle',0
 _SetConsoleOutputCP db 0,0,'SetConsoleOutputCP',0
 _SetConsoleCP       db 0,0,'SetConsoleCP',0
 _GetCommandLineA    db 0,0,'GetCommandLineA',0
+
