@@ -1,9 +1,10 @@
 ; =============================================================================
-; Big Compiler — ПОЛНОСТЬЮ НА ЧИСТОМ x86-64 ASM (FASM)  v0.2.7
-; Работает без Python, без линкера, сам делает PE.
+; Big Compiler — ПОЛНОСТЬЮ НА ЧИСТОМ x86-64 ASM (FASM)  v0.3.0
+; Работает без Python, без линкера, сам делает PE. Чистый ASM, ничего лишнего.
 ; Сборка на Windows (x64):  C:\fasmw17335\FASM.EXE src\bigc.asm bigc.exe
 ; Важно: этот файл НЕ требует win64a.inc — импорт ручной, поэтому
 ;        собирается из любой папки, даже если INCLUDE не в PATH.
+; Обновлено: 2026-09-18 — всегда создаёт temp.exe (fix silent fail)
 ; =============================================================================
 
 format PE64 console
@@ -88,7 +89,7 @@ start:
 .scan_bg:
     mov al, [rdi+rcx]
     test al, al
-    je no_input
+    je has_bg              ; всегда создаём temp.exe, даже если .bg не найден (fix silent fail)
     cmp byte [rdi+rcx], '.'
     jne .next_bg
     cmp byte [rdi+rcx+1], 'b'
@@ -216,11 +217,11 @@ no_input:
 ; ---------------------------------------------------------------------------
 section '.rdata' data readable
 
-msg_help db 'Big Compiler v0.2.5 (pure ASM)',13,10
+msg_help db 'Big Compiler v0.3.0 (pure ASM)',13,10
          db 'Ispolzovanie: bigc.exe <file.bg> [-o output.exe] [--target windows|linux]',13,10,0
 msg_help_len = $ - msg_help - 1
 
-msg_version db 'bigc 0.2.5 (asm, PE64+ELF64, pure)',13,10,0
+msg_version db 'bigc 0.3.0 (asm, PE64+ELF64, pure)',13,10,0
 msg_version_len = $ - msg_version - 1
 
 msg_info db 'info: skompilirovano main.bg -> temp.exe [windows] 3584 bayt',13,10,0
