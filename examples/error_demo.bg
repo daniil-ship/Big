@@ -1,0 +1,15 @@
+// error_demo.bg — демонстрация диагностики как в Rust
+// Этот файл содержит ошибки специально, чтобы показать подробные подсказки
+// Компиляция: bigc examples/error_demo.bg  — покажет error/warning/info как в Rust
+
+func main() -> i32 {
+    let x: i32 = "привет";  // error[E3006]: несоответствие типов i32 vs str
+    print(y);               // error[E3011]: неизвестная переменная y
+    let unused: i32 = 123;  // warning[W3002]: неиспользуемая переменная
+    let a: i32 = 5;
+    if a > 0 {
+        print("внутри if");
+    }
+    return a;
+}
+
