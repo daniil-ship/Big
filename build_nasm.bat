@@ -9,28 +9,32 @@ if errorlevel 1 (
     exit /b 1
 )
 
+rem --- сборка компилятора: чистый NASM -> самодостаточный PE64 без линкера ---
 nasm -f bin -w+all src\bigc.asm -o bigc.exe
 if errorlevel 1 exit /b %errorlevel%
 
-for %%I in (bigc.exe) do echo [OK] bigc.exe: %%~zI bytes, NASM flat PE64
-if not exist bigc.exe (
-    echo ERROR: NASM did not produce bigc.exe
+for %%I in (bigc.exe) do echo [OK] bigc.exe: %%~zI bytes, pure-NASM PE64 compiler
+
+rem --- smoke-тест: компилируем примеры и запускаем результаты ---
+for %%F in (hello vars main fib) do (
+    bigc.exe examples\%%F.bg -o examples\%%F.exe
+    if errorlevel 1 (
+        echo ERROR: bigc.exe failed on examples\%%F.bg
+        exit /b 1
+    )
+    examples\%%F.exe
+    if errorlevel 1 (
+        echo ERROR: examples\%%F.exe failed at runtime
+        exit /b 1
+    )
+)
+
+rem --- демонстрация диагностик (ожидается ненулевой код выхода) ---
+bigc.exe examples\error_demo.bg
+if "%errorlevel%"=="0" (
+    echo ERROR: error_demo.bg should fail with diagnostics
     exit /b 1
 )
 
-rem Smoke-test the exact path that previously failed.
-if exist temp.exe del /q temp.exe
-bigc.exe examples\main.bg -o temp.exe
-if errorlevel 1 exit /b %errorlevel%
-if not exist temp.exe (
-    echo ERROR: compiler did not create temp.exe
-    exit /b 1
-)
-
-for %%I in (temp.exe) do (
-    echo [OK] temp.exe: %%~zI bytes
-    if not "%%~zI"=="3584" echo WARNING: expected a 3584-byte PE template
-)
-
-echo [OK] NASM build and temp.exe smoke-test passed.
+echo [OK] NASM build and smoke-tests passed.
 endlocal
