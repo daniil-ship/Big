@@ -4848,7 +4848,7 @@ build_pe:
     mov dword [r15 + 0x194], 0x1000
     mov dword [r15 + 0x198], r11d          ; SizeOfRawData
     mov dword [r15 + 0x19C], 0x200         ; PointerToRawData
-    mov dword [r15 + 0x1A4], 0x40000040
+    mov dword [r15 + 0x1AC], 0x40000040   ; Characteristics (CNT_INIT_DATA|MEM_READ)
     ; секция .text (заголовок 0x1B0)
     mov dword [r15 + 0x1B0], 0x7865742E    ; ".tex" (2E 74 65 78)
     mov dword [r15 + 0x1B4], 0x00000074    ; "t\0\0\0"
@@ -4856,7 +4856,7 @@ build_pe:
     mov dword [r15 + 0x1BC], r14d          ; VirtualAddress
     mov dword [r15 + 0x1C0], r10d          ; SizeOfRawData
     mov dword [r15 + 0x1C4], r8d           ; PointerToRawData
-    mov dword [r15 + 0x1CC], 0x60000020
+    mov dword [r15 + 0x1D4], 0x60000020   ; Characteristics (CNT_CODE|MEM_EXEC|MEM_READ)
     ; --- данные ---
     ; .rdata в файл 0x200
     mov rdi, [rbx + G_OUT]
@@ -4974,4 +4974,4 @@ gen_import_blob:
 gen_blob_len equ ($ - gen_import_blob)
 
 text_end:
-    times 0 db 0
+    times (TEXT_RAW - TEXT_VSIZE) db 0   ; pad .text raw data up to SizeOfRawData
