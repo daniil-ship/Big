@@ -98,7 +98,14 @@ GetCommandLineA → разбор аргументов → чтение .bg (Crea
 - ImageBase `0x140000000`, подсистема 3 (консоль), стек/куча по 64 КБ
   (зарезервировано 1 МБ);
 - точка входа: выравнивание стека, установка кодовой страницы 65001,
-  `call main`, `ExitProcess(eax)`.
+  `call main`, `ExitProcess(eax)`;
+- инварианты, обязательные для загрузчика Windows (иначе
+  «Невозможно запустить это приложение»): `PointerToRawData +
+  SizeOfRawData ≤ размер файла` (код дополняется нулями до
+  `SizeOfRawData`), выравнивание по `FileAlignment`/`SectionAlignment`,
+  корректные `Characteristics` секций (`.text` = `0x60000020`, `.rdata`
+  = `0x40000040`, поле +0x24 заголовка секции). Проверить любой бинарник
+  можно строгим валидатором: `python tools/validate_pe.py файл.exe ...`.
 
 ## CLI
 
