@@ -1,0 +1,13 @@
+# Editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# Big compiler temporaries
+*.tmp
+*.log
+
+# Keep binaries (bigc.exe, examples/*.exe) tracked — do NOT ignore them
+!bigc.exe
+!examples/*.exe

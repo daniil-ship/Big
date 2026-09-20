@@ -1,0 +1,15 @@
+// vars.bg — переменные, арифметика, строки
+func main() -> i32 {
+    let a: i32 = 10;
+    let b: i32 = 20;
+    let c: i32 = a + b * 3 - 5;
+    print("c = ");
+    print(c);
+    println("");
+    // строки
+    let s: str = "Big — быстрее ASM!";
+    print(s);
+    println("");
+    return 0;
+}
+
